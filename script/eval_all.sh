@@ -22,6 +22,7 @@ fi
 
 OUTPUT_BASE="./logs/${MODEL}"
 mkdir -p "$OUTPUT_BASE"
+BATCH_SIZE="${BATCH_SIZE:-4}"
 
 export WORLD_SIZE=1
 export RANK=0
@@ -51,11 +52,11 @@ for TASK in "${TASKS[@]}"; do
     echo "========================================"
     echo "Running: $TASK"
     echo "========================================"
-    uv run python -m lmms_eval \
+    python -m lmms_eval \
         --model "$MODEL" \
         --model_args "$MODEL_ARGS" \
         --tasks "$TASK" \
-        --batch_size 1 \
+        --batch_size "$BATCH_SIZE" \
         --log_samples \
         --output_path "${OUTPUT_BASE}/${TASK}" 
         
@@ -70,4 +71,4 @@ echo ""
 echo "========================================"
 echo "SUMMARY"
 echo "========================================"
-uv run python script/aggregate_results.py --output-base "$OUTPUT_BASE" --mode standard
+python script/aggregate_results.py --output-base "$OUTPUT_BASE" --mode standard

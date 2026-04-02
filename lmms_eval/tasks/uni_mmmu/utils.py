@@ -20,6 +20,9 @@ from azure.identity import (
 )
 from openai import AzureOpenAI
 
+from lmms_eval.azure_openai_compat import build_client as build_azure_compat_client
+from lmms_eval.azure_openai_compat import has_endpoint_support
+
 
 # ============================================================================
 # GPT-4o API Client (from api.py)
@@ -34,23 +37,26 @@ def get_gpt4o_client():
     global _CLIENT, _DEPLOYMENT
 
     if _CLIENT is None:
-        scope = os.getenv("TRAPI_SCOPE", "api://trapi/.default")
-        api_version = os.getenv("TRAPI_API_VERSION", "2024-10-21")
-        _DEPLOYMENT = os.getenv("TRAPI_DEPLOYMENT", "gpt-4o_2024-11-20")
-        instance = os.getenv("TRAPI_INSTANCE", "gcr/shared")
-        endpoint = f"https://trapi.research.microsoft.com/{instance}"
+        if has_endpoint_support():
+            _CLIENT, _DEPLOYMENT = build_azure_compat_client()
+        else:
+            scope = os.getenv("TRAPI_SCOPE", "api://trapi/.default")
+            api_version = os.getenv("TRAPI_API_VERSION", "2024-10-21")
+            _DEPLOYMENT = os.getenv("TRAPI_DEPLOYMENT", "gpt-4o_2024-11-20")
+            instance = os.getenv("TRAPI_INSTANCE", "gcr/shared")
+            endpoint = f"https://trapi.research.microsoft.com/{instance}"
 
-        chained = ChainedTokenCredential(
-            AzureCliCredential(),
-            ManagedIdentityCredential(),
-        )
-        credential_provider = get_bearer_token_provider(chained, scope)
+            chained = ChainedTokenCredential(
+                AzureCliCredential(),
+                ManagedIdentityCredential(),
+            )
+            credential_provider = get_bearer_token_provider(chained, scope)
 
-        _CLIENT = AzureOpenAI(
-            azure_endpoint=endpoint,
-            azure_ad_token_provider=credential_provider,
-            api_version=api_version,
-        )
+            _CLIENT = AzureOpenAI(
+                azure_endpoint=endpoint,
+                azure_ad_token_provider=credential_provider,
+                api_version=api_version,
+            )
 
     return _CLIENT, _DEPLOYMENT
 
