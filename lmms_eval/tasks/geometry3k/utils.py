@@ -17,6 +17,9 @@ from azure.identity import (
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
 
+from lmms_eval.azure_openai_compat import build_client as build_azure_compat_client
+from lmms_eval.azure_openai_compat import has_endpoint_support
+
 
 # ============================================================================
 # LLM Judge Client (Azure TRAPI or OpenAI)
@@ -64,15 +67,29 @@ class OpenAIJudgeClient:
         return resp.choices[0].message.content
 
 
-_JUDGE_CLIENT: AzureJudgeClient | OpenAIJudgeClient | None = None
+class AzureEndpointJudgeClient:
+    """Azure OpenAI compatible endpoint client backed by Azure CLI bearer tokens."""
+
+    def __init__(self) -> None:
+        _, self.deployment = build_azure_compat_client()
+
+    def chat_completion(self, *, messages, **kwargs) -> str:
+        client, deployment = build_azure_compat_client(model=self.deployment)
+        resp = client.chat.completions.create(model=deployment, messages=messages, **kwargs)
+        return resp.choices[0].message.content
 
 
-def _get_judge_client() -> AzureJudgeClient | OpenAIJudgeClient:
+_JUDGE_CLIENT: AzureJudgeClient | AzureEndpointJudgeClient | OpenAIJudgeClient | None = None
+
+
+def _get_judge_client() -> AzureJudgeClient | AzureEndpointJudgeClient | OpenAIJudgeClient:
     """Get or create LLM Judge client (Azure or OpenAI based on env)."""
     global _JUDGE_CLIENT
     if _JUDGE_CLIENT is None:
         if os.getenv("OPENAI_API_KEY"):
             _JUDGE_CLIENT = OpenAIJudgeClient()
+        elif has_endpoint_support():
+            _JUDGE_CLIENT = AzureEndpointJudgeClient()
         else:
             _JUDGE_CLIENT = AzureJudgeClient()
     return _JUDGE_CLIENT
