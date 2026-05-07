@@ -350,26 +350,26 @@ FINE_GRAINED_STANDARD = [
 
 FINE_GRAINED_RS = [
     # ── Object Recognition ────────────────────────────────────────────────────
-    {"name": "rs_object_classification", "category": "Object Recognition", "components": [{"task": "rs_object_classification", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_object_color", "category": "Object Recognition", "components": [{"task": "rs_object_color", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_object_state", "category": "Object Recognition", "components": [{"task": "rs_object_state", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_object_background", "category": "Object Recognition", "components": [{"task": "rs_object_background", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_object_classification", "category": "Object Recognition", "components": [{"task": "rs_object_classification", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_object_color", "category": "Object Recognition", "components": [{"task": "rs_object_color", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_object_state", "category": "Object Recognition", "components": [{"task": "rs_object_state", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_object_background", "category": "Object Recognition", "components": [{"task": "rs_object_background", "metric": "accuracy", "samples": 21}]},
     # ── Scene Understanding ───────────────────────────────────────────────────
-    {"name": "rs_scene_classification", "category": "Scene Understanding", "components": [{"task": "rs_scene_classification", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_environmental_reasoning", "category": "Scene Understanding", "components": [{"task": "rs_environmental_reasoning", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_regional_existence", "category": "Scene Understanding", "components": [{"task": "rs_regional_existence", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_scene_classification", "category": "Scene Understanding", "components": [{"task": "rs_scene_classification", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_environmental_reasoning", "category": "Scene Understanding", "components": [{"task": "rs_environmental_reasoning", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_regional_existence", "category": "Scene Understanding", "components": [{"task": "rs_regional_existence", "metric": "accuracy", "samples": 21}]},
     # ── Counting & Spatial ────────────────────────────────────────────────────
-    {"name": "rs_counting", "category": "Counting & Spatial", "components": [{"task": "rs_counting", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_spatial_relationship", "category": "Counting & Spatial", "components": [{"task": "rs_spatial_relationship", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_counting", "category": "Counting & Spatial", "components": [{"task": "rs_counting", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_spatial_relationship", "category": "Counting & Spatial", "components": [{"task": "rs_spatial_relationship", "metric": "accuracy", "samples": 21}]},
     # ── Spatial Analysis ──────────────────────────────────────────────────────
-    {"name": "rs_route_planning", "category": "Spatial Analysis", "components": [{"task": "rs_route_planning", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_boundary_extraction", "category": "Spatial Analysis", "components": [{"task": "rs_boundary_extraction", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_route_planning", "category": "Spatial Analysis", "components": [{"task": "rs_route_planning", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_boundary_extraction", "category": "Spatial Analysis", "components": [{"task": "rs_boundary_extraction", "metric": "accuracy", "samples": 21}]},
     {"name": "rs_cross_tile_adjacency", "category": "Spatial Analysis", "components": [{"task": "rs_cross_tile_adjacency", "metric": "accuracy", "samples": 2}]},
-    {"name": "rs_buffer_analysis", "category": "Spatial Analysis", "components": [{"task": "rs_buffer_analysis", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_buffer_analysis", "category": "Spatial Analysis", "components": [{"task": "rs_buffer_analysis", "metric": "accuracy", "samples": 21}]},
     # ── Anomaly & Counterfactual ──────────────────────────────────────────────
-    {"name": "rs_anomaly_detection", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_anomaly_detection", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_counterfactual_editing", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_counterfactual_editing", "metric": "accuracy", "samples": 100}]},
-    {"name": "rs_landuse_plan_judgment", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_landuse_plan_judgment", "metric": "accuracy", "samples": 100}]},
+    {"name": "rs_anomaly_detection", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_anomaly_detection", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_counterfactual_editing", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_counterfactual_editing", "metric": "accuracy", "samples": 21}]},
+    {"name": "rs_landuse_plan_judgment", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_landuse_plan_judgment", "metric": "accuracy", "samples": 21}]},
     # ── Change Detection ──────────────────────────────────────────────────────
     {"name": "rs_urban_expansion_cd", "category": "Change Detection", "components": [{"task": "rs_urban_expansion_cd", "metric": "accuracy", "samples": 19}]},
     {"name": "rs_forest_cover_cd", "category": "Change Detection", "components": [{"task": "rs_forest_cover_cd", "metric": "accuracy", "samples": 2}]},
