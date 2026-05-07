@@ -212,10 +212,12 @@ class Bagel(lmms):
             self.accelerator = accelerator
             self._rank = self.accelerator.local_process_index
             self._world_size = self.accelerator.num_processes
+            self._device = torch.device(f"cuda:{self._rank}")
         else:
             self.accelerator = accelerator
             self._rank = 0
             self._world_size = 1
+            self._device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
         # Load model
         eval_logger.info(f"Loading Bagel model from {pretrained}")
@@ -359,6 +361,10 @@ class Bagel(lmms):
 
         self._model = model
         self._tokenizer = tokenizer
+
+    @property
+    def device(self):
+        return self._device
 
     @property
     def rank(self):
