@@ -1,0 +1,4 @@
+group: rs_counting_spatial
+task:
+  - rs_counting
+  - rs_spatial_relationship

@@ -1,0 +1,6 @@
+group: rs_spatial_analysis
+task:
+  - rs_route_planning
+  - rs_boundary_extraction
+  - rs_cross_tile_adjacency
+  - rs_buffer_analysis

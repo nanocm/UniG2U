@@ -1,0 +1,22 @@
+group: rs_bench
+task:
+  - rs_object_classification
+  - rs_object_color
+  - rs_object_state
+  - rs_object_background
+  - rs_scene_classification
+  - rs_environmental_reasoning
+  - rs_regional_existence
+  - rs_counting
+  - rs_spatial_relationship
+  - rs_route_planning
+  - rs_boundary_extraction
+  - rs_cross_tile_adjacency
+  - rs_buffer_analysis
+  - rs_anomaly_detection
+  - rs_counterfactual_editing
+  - rs_landuse_plan_judgment
+  - rs_urban_expansion_cd
+  - rs_forest_cover_cd
+  - rs_water_body_cd
+  - rs_farmland_cd

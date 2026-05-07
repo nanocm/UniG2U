@@ -348,6 +348,36 @@ FINE_GRAINED_STANDARD = [
 ]
 
 
+FINE_GRAINED_RS = [
+    # ── Object Recognition ────────────────────────────────────────────────────
+    {"name": "rs_object_classification", "category": "Object Recognition", "components": [{"task": "rs_object_classification", "metric": "accuracy", "samples": 189}]},
+    {"name": "rs_object_color", "category": "Object Recognition", "components": [{"task": "rs_object_color", "metric": "accuracy", "samples": 199}]},
+    {"name": "rs_object_state", "category": "Object Recognition", "components": [{"task": "rs_object_state", "metric": "accuracy", "samples": 114}]},
+    {"name": "rs_object_background", "category": "Object Recognition", "components": [{"task": "rs_object_background", "metric": "accuracy", "samples": 190}]},
+    # ── Scene Understanding ───────────────────────────────────────────────────
+    {"name": "rs_scene_classification", "category": "Scene Understanding", "components": [{"task": "rs_scene_classification", "metric": "accuracy", "samples": 197}]},
+    {"name": "rs_environmental_reasoning", "category": "Scene Understanding", "components": [{"task": "rs_environmental_reasoning", "metric": "accuracy", "samples": 197}]},
+    {"name": "rs_regional_existence", "category": "Scene Understanding", "components": [{"task": "rs_regional_existence", "metric": "accuracy", "samples": 198}]},
+    # ── Counting & Spatial ────────────────────────────────────────────────────
+    {"name": "rs_counting", "category": "Counting & Spatial", "components": [{"task": "rs_counting", "metric": "accuracy", "samples": 176}]},
+    {"name": "rs_spatial_relationship", "category": "Counting & Spatial", "components": [{"task": "rs_spatial_relationship", "metric": "accuracy", "samples": 186}]},
+    # ── Spatial Analysis ──────────────────────────────────────────────────────
+    {"name": "rs_route_planning", "category": "Spatial Analysis", "components": [{"task": "rs_route_planning", "metric": "accuracy", "samples": 200}]},
+    {"name": "rs_boundary_extraction", "category": "Spatial Analysis", "components": [{"task": "rs_boundary_extraction", "metric": "accuracy", "samples": 196}]},
+    {"name": "rs_cross_tile_adjacency", "category": "Spatial Analysis", "components": [{"task": "rs_cross_tile_adjacency", "metric": "accuracy", "samples": 2}]},
+    {"name": "rs_buffer_analysis", "category": "Spatial Analysis", "components": [{"task": "rs_buffer_analysis", "metric": "accuracy", "samples": 196}]},
+    # ── Anomaly & Counterfactual ──────────────────────────────────────────────
+    {"name": "rs_anomaly_detection", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_anomaly_detection", "metric": "accuracy", "samples": 196}]},
+    {"name": "rs_counterfactual_editing", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_counterfactual_editing", "metric": "accuracy", "samples": 198}]},
+    {"name": "rs_landuse_plan_judgment", "category": "Anomaly & Counterfactual", "components": [{"task": "rs_landuse_plan_judgment", "metric": "accuracy", "samples": 199}]},
+    # ── Change Detection ──────────────────────────────────────────────────────
+    {"name": "rs_urban_expansion_cd", "category": "Change Detection", "components": [{"task": "rs_urban_expansion_cd", "metric": "accuracy", "samples": 19}]},
+    {"name": "rs_forest_cover_cd", "category": "Change Detection", "components": [{"task": "rs_forest_cover_cd", "metric": "accuracy", "samples": 2}]},
+    {"name": "rs_water_body_cd", "category": "Change Detection", "components": [{"task": "rs_water_body_cd", "metric": "accuracy", "samples": 5}]},
+    {"name": "rs_farmland_cd", "category": "Change Detection", "components": [{"task": "rs_farmland_cd", "metric": "accuracy", "samples": 1}]},
+]
+
+
 def to_cot_task_name(task_name: str) -> str:
     if task_name.startswith("illusionbench_arshia_") and task_name.endswith("_test"):
         return task_name[:-5] + "_visual_cot"
@@ -368,20 +398,29 @@ def to_cot_task_name(task_name: str) -> str:
     return task_name + "_visual_cot"
 
 
+def _to_visual_cot_spec(base_spec: List[Dict[str, object]], name_fn) -> List[Dict[str, object]]:
+    """Convert a base spec to its Visual CoT variant by renaming tasks."""
+    cot_spec = []
+    for item in base_spec:
+        cot_item = dict(item)
+        cot_item["components"] = []
+        for component in item["components"]:
+            cot_component = dict(component)
+            cot_component["task"] = name_fn(str(component["task"]))
+            cot_item["components"].append(cot_component)
+        cot_spec.append(cot_item)
+    return cot_spec
+
+
 def get_fine_grained_spec(mode: str) -> List[Dict[str, object]]:
     if mode == "standard":
         return FINE_GRAINED_STANDARD
     if mode == "cot":
-        cot_spec = []
-        for item in FINE_GRAINED_STANDARD:
-            cot_item = dict(item)
-            cot_item["components"] = []
-            for component in item["components"]:
-                cot_component = dict(component)
-                cot_component["task"] = to_cot_task_name(str(component["task"]))
-                cot_item["components"].append(cot_component)
-            cot_spec.append(cot_item)
-        return cot_spec
+        return _to_visual_cot_spec(FINE_GRAINED_STANDARD, to_cot_task_name)
+    if mode == "rs_standard":
+        return FINE_GRAINED_RS
+    if mode == "rs_cot":
+        return _to_visual_cot_spec(FINE_GRAINED_RS, lambda t: t + "_visual_cot")
     raise ValueError(f"Unsupported mode: {mode}")
 
 
@@ -534,7 +573,7 @@ def print_benchmark_summary(summary: Dict[str, object]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-base", required=True, help="Base output directory, for example ./logs/qwen2_5_vl")
-    parser.add_argument("--mode", choices=("standard", "cot"), required=True, help="Aggregation mode for task name mapping")
+    parser.add_argument("--mode", choices=("standard", "cot", "rs_standard", "rs_cot"), required=True, help="Aggregation mode for task name mapping")
     args = parser.parse_args()
 
     output_base = Path(args.output_base)

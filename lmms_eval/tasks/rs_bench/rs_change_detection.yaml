@@ -1,0 +1,6 @@
+group: rs_change_detection
+task:
+  - rs_urban_expansion_cd
+  - rs_forest_cover_cd
+  - rs_water_body_cd
+  - rs_farmland_cd

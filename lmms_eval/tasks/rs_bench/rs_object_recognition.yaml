@@ -1,0 +1,6 @@
+group: rs_object_recognition
+task:
+  - rs_object_classification
+  - rs_object_color
+  - rs_object_state
+  - rs_object_background

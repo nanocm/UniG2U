@@ -1,0 +1,5 @@
+group: rs_scene_understanding
+task:
+  - rs_scene_classification
+  - rs_environmental_reasoning
+  - rs_regional_existence

@@ -1,0 +1,5 @@
+group: rs_anomaly_counterfactual
+task:
+  - rs_anomaly_detection
+  - rs_counterfactual_editing
+  - rs_landuse_plan_judgment
