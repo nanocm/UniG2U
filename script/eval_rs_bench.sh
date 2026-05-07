@@ -40,6 +40,20 @@ OUTPUT_BASE="./logs/${MODEL}_rs"
 mkdir -p "$OUTPUT_BASE"
 BATCH_SIZE="${BATCH_SIZE:-1}"
 
+# Log file: logs/<model>_rs/eval_<model>_<timestamp>.log
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+LOG_FILE="${OUTPUT_BASE}/eval_${MODEL}_${TIMESTAMP}.log"
+
+# Tee all output (stdout + stderr) to both terminal and log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "Log file: $LOG_FILE"
+echo "Model: $MODEL"
+echo "Model args: $MODEL_ARGS"
+echo "GPUs: $NUM_GPUS"
+echo "Started: $(date)"
+echo ""
+
 # Build launch command based on GPU count
 if [[ "$NUM_GPUS" -gt 1 ]]; then
     LAUNCH_CMD="accelerate launch --num_processes $NUM_GPUS -m lmms_eval"
@@ -103,3 +117,7 @@ echo "========================================"
 echo "SUMMARY"
 echo "========================================"
 python script/aggregate_results.py --output-base "$OUTPUT_BASE" --mode rs_standard
+
+echo ""
+echo "Finished: $(date)"
+echo "Full log: $LOG_FILE"
