@@ -136,6 +136,8 @@ def convert_mannual_task(json_path: Path, task_key: str) -> list[dict]:
 def main():
     parser = argparse.ArgumentParser(description="Convert raw GeoG2U data to parquet")
     parser.add_argument("--raw-root", type=str, default="raw_data", help="Path to raw_data directory")
+    parser.add_argument("--max-samples", type=int, default=None, help="Max samples per task (e.g. 100)")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for sampling")
     args = parser.parse_args()
 
     raw_root = Path(args.raw_root)
@@ -143,6 +145,13 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     total_samples = 0
+    max_samples = args.max_samples
+
+    def cap_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+        """Randomly sample down to max_samples if needed."""
+        if max_samples is not None and len(df) > max_samples:
+            return df.sample(n=max_samples, random_state=args.seed).reset_index(drop=True)
+        return df
 
     # ── exports tasks ─────────────────────────────────────────────────────────
     exports_dir = raw_root / "exports"
@@ -164,7 +173,7 @@ def main():
             continue
 
         task_name = TASK_NAMES[task_key]
-        df = pd.DataFrame(records)
+        df = cap_dataframe(pd.DataFrame(records))
         out_path = output_dir / f"{task_name}.parquet"
         df.to_parquet(out_path, index=False)
         total_samples += len(df)
@@ -181,7 +190,7 @@ def main():
 
             records = convert_mannual_task(json_path, task_key)
             task_name = TASK_NAMES[task_key]
-            df = pd.DataFrame(records)
+            df = cap_dataframe(pd.DataFrame(records))
             out_path = output_dir / f"{task_name}.parquet"
             df.to_parquet(out_path, index=False)
             total_samples += len(df)
