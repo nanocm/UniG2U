@@ -55,8 +55,11 @@ echo "Started: $(date)"
 echo ""
 
 # Build launch commands
+# Random port to avoid conflicts when running multiple scripts
+MASTER_PORT=$((29500 + RANDOM % 1000))
+
 if [[ "$NUM_GPUS" -gt 1 ]]; then
-    LAUNCH_CMD="accelerate launch --num_processes $NUM_GPUS -m lmms_eval"
+    LAUNCH_CMD="accelerate launch --num_processes $NUM_GPUS --main_process_port $MASTER_PORT -m lmms_eval"
 else
     LAUNCH_CMD="python -m lmms_eval"
 fi
@@ -112,7 +115,7 @@ export WORLD_SIZE=1
 export RANK=0
 export LOCAL_RANK=0
 export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29314
+export MASTER_PORT=$((29500 + RANDOM % 1000))
 
 for TASK in "${SMALL_TASKS[@]}"; do
     echo "========================================"
