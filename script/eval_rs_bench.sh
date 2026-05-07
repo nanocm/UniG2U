@@ -54,19 +54,16 @@ echo "GPUs: $NUM_GPUS"
 echo "Started: $(date)"
 echo ""
 
-# Build launch command based on GPU count
+# Build launch commands
 if [[ "$NUM_GPUS" -gt 1 ]]; then
     LAUNCH_CMD="accelerate launch --num_processes $NUM_GPUS -m lmms_eval"
 else
-    export WORLD_SIZE=1
-    export RANK=0
-    export LOCAL_RANK=0
-    export MASTER_ADDR=127.0.0.1
-    export MASTER_PORT=29314
     LAUNCH_CMD="python -m lmms_eval"
 fi
+# Single-GPU fallback for tasks with very few samples
+LAUNCH_CMD_1GPU="python -m lmms_eval"
 
-# Single-image tasks (16)
+# Tasks with enough samples for multi-GPU
 TASKS=(
     rs_object_classification
     rs_object_color
@@ -79,26 +76,49 @@ TASKS=(
     rs_spatial_relationship
     rs_route_planning
     rs_boundary_extraction
-    rs_cross_tile_adjacency
     rs_buffer_analysis
     rs_anomaly_detection
     rs_counterfactual_editing
     rs_landuse_plan_judgment
+    rs_urban_expansion_cd
 )
 
-# Change detection tasks (4, dual-image)
-CD_TASKS=(
-    rs_urban_expansion_cd
+# Tasks with very few samples (<=5) — always run on 1 GPU
+SMALL_TASKS=(
+    rs_cross_tile_adjacency
     rs_forest_cover_cd
     rs_water_body_cd
     rs_farmland_cd
 )
 
-for TASK in "${TASKS[@]}" "${CD_TASKS[@]}"; do
+for TASK in "${TASKS[@]}"; do
     echo "========================================"
     echo "Running: $TASK (${NUM_GPUS} GPU(s))"
     echo "========================================"
     $LAUNCH_CMD \
+        --model "$MODEL" \
+        --model_args "$MODEL_ARGS" \
+        --tasks "$TASK" \
+        --batch_size "$BATCH_SIZE" \
+        --log_samples \
+        --output_path "${OUTPUT_BASE}/${TASK}"
+
+    echo "Done: $TASK"
+    echo
+done
+
+# Run small tasks on single GPU to avoid "no docs" error
+export WORLD_SIZE=1
+export RANK=0
+export LOCAL_RANK=0
+export MASTER_ADDR=127.0.0.1
+export MASTER_PORT=29314
+
+for TASK in "${SMALL_TASKS[@]}"; do
+    echo "========================================"
+    echo "Running: $TASK (1 GPU - small task)"
+    echo "========================================"
+    $LAUNCH_CMD_1GPU \
         --model "$MODEL" \
         --model_args "$MODEL_ARGS" \
         --tasks "$TASK" \
