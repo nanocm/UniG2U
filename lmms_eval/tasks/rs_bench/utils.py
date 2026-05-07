@@ -17,6 +17,8 @@ import re
 
 from PIL import Image
 
+Image.MAX_IMAGE_PIXELS = None  # RS images can exceed 300M pixels
+
 eval_logger = logging.getLogger("lmms-eval")
 
 IMAGE_ROOT = os.environ.get("GEOG2U_IMAGE_ROOT", "")
